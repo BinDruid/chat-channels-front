@@ -1,0 +1,20 @@
+@font-face {
+  font-family: "Sahel FD";
+  src: url("../font/Sahel-FD.woff2") format("woff2");
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: "Sahel FD" !important;
+}
+
+.v-btn {
+  letter-spacing: initial;
+}
+
+.v-btn--icon.v-btn--density-default {
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+}
