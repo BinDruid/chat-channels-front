@@ -1,5 +1,5 @@
 <template>
-    <h1 class="text-center">Chat Screen</h1>
+    <h1 class="text-center">{{ conversation_name }}</h1>
     <v-row>
         <v-col cols="6">
             <v-card class="overflow-auto mx-auto" fill-height>
@@ -33,16 +33,19 @@ import { ref, watch } from 'vue'
 import { useWebSocket } from '@vueuse/core'
 const { VITE_SOCKET_URL: SOCKET_URL } = import.meta.env
 const chats = ref([])
+const conversation_name = ref("")
 const message = ref("")
 const form = ref(false)
-const props = defineProps(["room_id"])
+const props = defineProps(["conversation_id"])
 const token = localStorage.getItem("authToken") ?? " "
-const { status, data, send, open, close } = useWebSocket(`${SOCKET_URL}/${props.room_id}/?token=${token}`)
+const { status, data, send, open, close } = useWebSocket(`${SOCKET_URL}/${props.conversation_id}/?token=${token}`)
 
 const refineData = (data) => JSON.parse(data.value.replace("\\", ''))
 
 watch((data), () => {
     const server_response = refineData(data)
+    if (server_response.type === "server_join_confirm")
+        conversation_name.value = server_response["conversation_name"]
     if (server_response.type === "new_chat_message")
         chats.value.push(server_response["message"])
     if (server_response.type === "server_recent_messages")

@@ -7,7 +7,7 @@ import useAuthStore from "@/store/authStore"
 
 const routes = [
   {
-    path: "/chats/:room_id?",
+    path: "/chats/:conversation_id?",
     name: "chats",
     component: TheChats,
     props: true,
