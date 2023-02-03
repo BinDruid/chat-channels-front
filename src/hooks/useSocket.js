@@ -5,7 +5,7 @@ const useSocket = () => {
   const currentConnection = ref(null)
   const data = ref(null)
 
-  const connetWebScoket = (url, token) => {
+  const connectWebSocket = (url, token) => {
     currentConnection.value = new WebSocket(
       `${SOCKET_URL}/${url.value}/?token=${token}`
     )
@@ -19,7 +19,7 @@ const useSocket = () => {
   return {
     currentConnection,
     data,
-    connetWebScoket,
+    connectWebSocket,
     refineData,
   }
 }
