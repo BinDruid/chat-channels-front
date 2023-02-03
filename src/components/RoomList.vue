@@ -6,7 +6,7 @@
         <v-list>
             <v-list-item v-for="conversation in conversations" :title="conversation.name" :key="conversation.id"
                 :value="conversation" @click="connectionHandler(conversation)" class="ma-2"
-                :subtitle="conversation.owner.username" active-color="pink-lighten-2" rounded="xl">
+                :subtitle="lastMessage(conversation)" active-color="pink-lighten-2" rounded="xl">
                 <template v-slot:prepend>
                     <v-avatar color="pink">
                         <v-icon icon="mdi-message-text-fast-outline"></v-icon>
@@ -24,5 +24,7 @@
 
 <script setup>
 const props = defineProps(["connectionHandler", "conversations"])
-
+const lastMessage = (conversation) => {
+    return conversation.last_message.content.split(" ").slice(0, 7).join(" ") + " ..."
+}
 </script>
