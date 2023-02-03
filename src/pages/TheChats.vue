@@ -1,16 +1,10 @@
 <template>
-    <h1 class="text-center">{{ conversation_name }}</h1>
     <v-row>
-
         <v-col lg="4" md="4" sm="12" xs="12">
             <room-list :conversations="conversations" :connectionHandler="joinConversation"></room-list>
         </v-col>
-
         <v-col lg="8" md="8" sm="12" xs="12">
             <chat-list :chats="chats"></chat-list>
-        </v-col>
-
-        <v-col lg="12" md="12" sm="12" xs="12" class="no-padd">
             <v-form v-model="form" @submit.prevent="sendMessage" dir="ltr">
                 <v-text-field class="my-4" v-model="message" append-inner-icon="mdi-send" variant="filled"
                     clear-icon="mdi-close-circle" clearable label="پیام" type="text" @click:append-inner="sendMessage"
@@ -19,7 +13,6 @@
                 <br>
             </v-form>
         </v-col>
-
     </v-row>
 </template>
 
@@ -30,8 +23,9 @@ import axios from "axios"
 import configAxios from "@/config/axios"
 import RoomList from "@/components/RoomList.vue"
 import ChatList from "@/components/ChatList.vue"
+import useSocket from "@/hooks/useSocket"
+import useChat from "@/hooks/useChat"
 
-const { VITE_SOCKET_URL: SOCKET_URL } = import.meta.env
 const { VITE_API_URL: API_URL } = import.meta.env
 const router = useRouter()
 const props = defineProps(["conversation_id"])
@@ -42,22 +36,16 @@ const message = ref("")
 const form = ref(false)
 const token = localStorage.getItem("authToken") ?? " "
 const url = ref(props.conversation_id)
-const currentConnection = ref(null)
-const data = ref(null)
+const { sentByCurrentUser } = useChat()
+const { currentConnection, data, connetWebScoket, refineData } = useSocket()
 
 configAxios()
 
-const connetWebScoket = () => {
-    currentConnection.value = new WebSocket(`${SOCKET_URL}/${url.value}/?token=${token}`)
-    currentConnection.value.onmessage = (event) => {
-        data.value = event.data;
-    }
-}
 const joinConversation = (conversation) => {
-    currentConnection.value.close()
+    if (currentConnection.value) currentConnection.value.close()
     url.value = conversation.id
     router.push({ path: `/chats/${url.value}` })
-    connetWebScoket()
+    connetWebScoket(url, token)
 }
 
 const getConversations = async () => {
@@ -71,7 +59,6 @@ const getConversations = async () => {
     }
 }
 
-const refineData = (data) => JSON.parse(data.value.replace("\\", ''))
 
 watch((data), () => {
     const server_response = refineData(data)
@@ -98,8 +85,6 @@ const clearMessage = () => {
     message.value = null
 }
 
-const sentByCurrentUser = (chat) => { return chat.chatter.username === localStorage.getItem("username") }
-
 const deleteChat = (chat) => {
     if (sentByCurrentUser(chat))
         currentConnection.value.send(JSON.stringify({
@@ -109,7 +94,6 @@ const deleteChat = (chat) => {
 }
 
 onMounted(async () => {
-    connetWebScoket()
     await getConversations()
 
 })

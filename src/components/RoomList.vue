@@ -2,7 +2,7 @@
     <v-toolbar density="compact" title="گفتگوها">
 
     </v-toolbar>
-    <v-card class="overflow-auto mx-auto" max-height="80%">
+    <v-card class="overflow-auto mx-auto" height="350">
         <v-list>
             <v-list-item v-for="conversation in conversations" :title="conversation.name" :key="conversation.id"
                 :value="conversation" @click="connectionHandler(conversation)" class="ma-2"
